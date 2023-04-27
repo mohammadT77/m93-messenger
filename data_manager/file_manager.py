@@ -33,6 +33,7 @@ class FileManager(BaseManager):
             return m
 
     def update(self, m: BaseModel) -> None:
+        assert getattr(m, '_id', None) "Modle does NOT hase '_id"
         path = self._get_file_path(m._id, m.__class__)
         with open(path, 'wb') as f:
             pickle.dump(m, f)
