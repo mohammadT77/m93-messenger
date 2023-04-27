@@ -11,15 +11,16 @@ class FileManager(BaseManager):
     def _get_id(self, model_type: type) -> int: # User
         files = os.listdir(self._files_root+'/')
         ids = []
-        files = filter(lambda file_name: file_name.startswith(model_type.__name__), files)
-        ids = list(map(lambda file_name: int(file_name.split('.')[0].split('_')[-1]), files))
+        for f in files:
+            if f.startswith(model_type.__name__):
+                ids.append(int(f.split('_')[-1].split('.')[0]))
         return max(ids)+1 if ids else 1
 
     def _get_file_path(self, _id, model_type: type) -> str:
         return f"{self._files_root}/{model_type.__name__}_{_id}.pkl".replace('//', '/')
 
     def create(self, m: BaseModel) -> Any:   # manager.create(user) # user.id!!!!
-        m._id = self._get_id(m)  # set ID!!!!!
+        m._id = self._get_id(m.__class__)  # set ID!!!!!
         path = self._get_file_path(m._id, m.__class__)
         with open(path, 'xb') as f:
             pickle.dump(m, f)

@@ -9,6 +9,5 @@ from core.models import User
 
 manager = FileManager({'ROOT_PATH':'data/'})
 
-user = manager.read(1, User)
-print(user)
-
+user5 = User('AKBAR5','AKBAR3','AKBAR3','AKBAR3')
+manager.update(user5)
