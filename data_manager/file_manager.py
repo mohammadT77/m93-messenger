@@ -46,4 +46,13 @@ class FileManager(BaseManager):
             os.remove(path)
 
     def read_all(self, model_cls: type = None) -> Generator:
-        pass
+        for file_name in os.listdir(self._files_root):
+            if not file_name.endswith('.pkl'):
+                continue
+            if model_cls and not file_name.startswith(model_cls.__name__):
+                continue
+            file_path = os.path.join(self._files_root, file_name)
+            with open(file_path, 'rb') as f:
+                instance = pickle.load(f)
+                if not model_cls or isinstance(instance, model_cls):
+                    yield instance
