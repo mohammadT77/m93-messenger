@@ -33,10 +33,16 @@ class FileManager(BaseManager):
             return m
 
     def update(self, m: BaseModel) -> None:
-        pass
+        assert getattr(m, '_id', None), "Model does NOT have `_id`"
+        path = self._get_file_path(m._id, m.__class__)
+        with open(path, 'wb') as f:
+            pickle.dump(m, f)
+        return path
 
     def delete(self, id: int, model_cls: type) -> None:
-        pass
+        path = self._get_file_path(id, model_cls)
+        if os.path.exists(path):
+            os.remove(path)
 
     def read_all(self, model_cls: type = None) -> Generator:
         pass
