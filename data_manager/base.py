@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Generator
 
+
 class BaseModel(ABC):
     TABLE_NAME = None
     COLUMNS = {
@@ -32,7 +33,11 @@ class BaseModel(ABC):
             if not k.lower():
                 del result[k]
         return result
-    
+
+    @property
+    def id(self):
+        return self._id
+
 
 class BaseManager:
     

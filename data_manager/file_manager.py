@@ -3,12 +3,13 @@ from typing import Generator, Any
 import pickle
 import os
 
+
 class FileManager(BaseManager):
 
     def __init__(self, config: dict) -> None:
-        self._files_root = config.get('ROOT_PATH') # data/
+        self._files_root = config.get('ROOT_PATH')  # data/
 
-    def _get_id(self, model_type: type) -> int: # User
+    def _get_id(self, model_type: type) -> int:  # User
         files = os.listdir(self._files_root+'/')
         ids = []
         files = filter(lambda file_name: file_name.startswith(model_type.__name__), files)
@@ -24,7 +25,6 @@ class FileManager(BaseManager):
         with open(path, 'xb') as f:
             pickle.dump(m, f)
         return path
-        
 
     def read(self, id: int, model_cls: type) -> BaseModel:
         path = self._get_file_path(id, model_cls)
@@ -33,10 +33,14 @@ class FileManager(BaseManager):
             return m
 
     def update(self, m: BaseModel) -> None:
-        pass
+        path = self._get_file_path(m._id, m.__class__)
+        with open(path, 'wb') as f:
+            pickle.dump(m, f)
 
     def delete(self, id: int, model_cls: type) -> None:
-        pass
+        path = self._get_file_path(id, model_cls)
+        if os.path.exists(path):
+            os.remove(path)
 
     def read_all(self, model_cls: type = None) -> Generator:
         pass
