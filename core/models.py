@@ -57,6 +57,30 @@ class Message(BaseModel):
     content: str
     sender: int
     receiver: int
-    status: str = 'DRAFT' # = ('DRAFT', 'DONE', 'SEEN')
+    status: str = 'DRAFT' # = ('DRAFT', 'SENT', 'SEEN')
     last_change: str = str(datetime.now())
     reply_parent: Optional[int] = None
+
+    @classmethod
+    def get_messages_by_status(cls, status=None, sender=None, receiver=None ):
+        with manager.connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as curs:
+            conditions = []
+            data_tuple = []
+
+            if status: 
+                conditions.append('status=%s')
+                data_tuple.append(status)
+            if sender: 
+                conditions.append('sender=%s')
+                data_tuple.append(sender)
+            if receiver: 
+                conditions.append('receiver=%s')
+                data_tuple.append(receiver)
+
+
+            curs.execute(f"SELECT * FROM {cls.TABLE_NAME}" +
+                         ((" WHERE "+' and '.join(conditions)) if conditions else "")
+                        , tuple(data_tuple))
+            messages_dict = curs.fetchall()
+            for msg in messages_dict:
+                yield cls.from_dict(msg)

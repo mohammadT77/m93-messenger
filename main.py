@@ -12,10 +12,5 @@ menu_root()
 
 # from data_manager.db_manager import DBManager
 # from core.models import User, Message
-# dbmanager = DBManager({'db_config': db_config})
-# # user1 = dbmanager.read(2, User)
-# # user2 = dbmanager.read(3, User)
-
-# # print(*list(dbmanager.read_all(User)), sep="\n")
-# # msg = Message("Test", "testest", user1._id, user2._id)
-# print(list(dbmanager.read_all(Message)))
+# messages = Message.get_messages_by_status(sender=2)
+# print(*list(messages), sep='\n')

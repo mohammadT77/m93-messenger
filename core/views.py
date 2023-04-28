@@ -50,17 +50,29 @@ def create_new_message():
     manager.create(msg)
     
     print("\nThe message status:", status)
-        
+
 
 def inbox():
     if not User.CURRENT_USER:
         print("Login first!")
         return
     
+    inbox_messages = Message.get_messages_by_status('SENT', receiver=User.CURRENT_USER._id)
+    for i,msg in enumerate(inbox_messages):
+        sender = manager.read(msg.sender, User)
+        print(f"{i+1})", f"from @{sender.username} - ", msg.subject, f':{msg.content}')
+    
     
 
 def sent():
-    pass
+    if not User.CURRENT_USER:
+        print("Login first!")
+        return
+    
+    inbox_messages = Message.get_messages_by_status('SENT', sender=User.CURRENT_USER._id)
+    for i,msg in enumerate(inbox_messages):
+        receiver = manager.read(msg.receiver, User)
+        print(f"{i+1})", f"to @{receiver.username} - ", msg.subject, f':{msg.content}')
 
 def draft():
     pass
