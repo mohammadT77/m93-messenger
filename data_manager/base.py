@@ -26,7 +26,7 @@ class BaseModel(ABC):
         super_cols.update(cls_cols)
         return super_cols
 
-    def dict(self):
+    def to_dict(self):
         result = vars(self).copy()
         for k in result.keys():
             if not k.lower():

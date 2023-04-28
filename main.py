@@ -13,4 +13,5 @@ db_config = {
 from data_manager.db_manager import DBManager
 from core.models import User
 dbmanager = DBManager({'db_config': db_config})
-print(dbmanager.get_create_table_sql(User))
+user = User("asqar", 'asqar', 'asqar', 'asqar')
+dbmanager.create(user)
