@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any, Generator
 
-
 class BaseModel(ABC):
     TABLE_NAME = None
     COLUMNS = {
@@ -14,7 +13,7 @@ class BaseModel(ABC):
         return f"<{self.__class__.__name__} #{self._id}>"
     
     @classmethod
-    def from_dict(cls, data: dict):
+    def from_dict(cls, data):
         obj = cls.__new__(cls)
         for k, v in data.items():
             setattr(obj, k, v)
@@ -33,11 +32,7 @@ class BaseModel(ABC):
             if not k.lower():
                 del result[k]
         return result
-
-    @property
-    def id(self):
-        return self._id
-
+    
 
 class BaseManager:
     
