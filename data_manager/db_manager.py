@@ -9,6 +9,15 @@ class DBManager(BaseManager):
         self._db_config = config['db_config']
         self.__conn = pg.connect(**self._db_config)
 
+    @staticmethod
+    def converter_model_to_query(value):
+        if isinstance(value, str):
+            return f"'{value}'"
+        elif value is None:
+            return 'NULL'
+        else:
+            return str(value)
+
     
     def create_table(self, model_cls: type):
         assert issubclass(model_cls, BaseModel)
@@ -32,7 +41,7 @@ class DBManager(BaseManager):
             self.create_table(m.__class__)
         
         model_data = m.to_dict()  # {'_id':1, 'username':'akbar', ...}
-        converter = lambda x: f"'{x}'" if isinstance(x, str) else str(x)
+        converter = self.converter_model_to_query
 
         with self.__conn.cursor() as curs:
             keys = ','.join(model_data.keys())
@@ -63,13 +72,47 @@ class DBManager(BaseManager):
 
     def update(self, m: BaseModel) -> None:
         assert getattr(m, '_id', None)
-        # m.to_dict()
-        # m.TABLE_NAME
-        "UPDATE tablename x WHERE x, SET y"
+
+        converter = self.converter_model_to_query
+
+        fresh_data = m.to_dict() # {'_id':1, 'username':'akbar', ...}
+        id = fresh_data.pop('_id')
+
+        # dict..items() -> [('username', 'akbar'), (...)]
+        # before join -> ["username='akbar'", "firstname='asqar'"]
+        # after join -> "username='akbar', firstname='asqar', ..."
+        updates = ','.join(map(lambda item: item[0]+'='+ f"{converter(item[1])}", fresh_data.items()))
+
+        with self.__conn.cursor() as cur:
+            cur.execute(f"UPDATE {m.TABLE_NAME} SET {updates} WHERE _id = %s;", (id, ))
+        self.__conn.commit()
 
 
     def delete(self, id: int, model_cls: type) -> None:
-        pass
+        assert getattr(model_cls, 'TABLE_NAME', None), "Could not find TABLE NAME"
+        
+        with self.__conn.cursor() as curs:
+            curs.execute(f"DELETE FROM {model_cls.TABLE_NAME} WHERE _id = %s", (id,))
+        self.__conn.commit()
+
+
 
     def read_all(self, model_cls: type):
-        pass
+        assert issubclass(model_cls, BaseModel)
+        assert getattr(model_cls, 'TABLE_NAME', None), "Could not find TABLE NAME"
+        
+        # Read from DB
+        curs = self.__conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        curs.execute(f"SELECT * FROM {model_cls.TABLE_NAME}")
+        models_data:list = curs.fetchall()
+        curs.close()
+
+        # Convert to Model
+        for data in models_data:
+            yield model_cls.from_dict(data)
+
+
+    @property
+    def connection(self):
+        return self.__conn
+    

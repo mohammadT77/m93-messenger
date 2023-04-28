@@ -11,7 +11,11 @@ db_config = {
 }
 
 from data_manager.db_manager import DBManager
-from core.models import User
+from core.models import User, Message
 dbmanager = DBManager({'db_config': db_config})
-user = User("asqar", 'asqar', 'asqar', 'asqar')
-dbmanager.create(user)
+user1 = dbmanager.read(2, User)
+user2 = dbmanager.read(3, User)
+
+# print(*list(dbmanager.read_all(User)), sep="\n")
+msg = Message("Test", "testest", user1._id, user2._id)
+dbmanager.create(msg)
