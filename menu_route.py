@@ -1,3 +1,5 @@
+from core import views
+
 def todo():
     print("TODO")
 
@@ -13,17 +15,17 @@ MENU_ROUTE = {
                 {
                     'name':'Login',
                     'description':'',
-                    'function': todo,
+                    'function': views.login,
                 },
                 {
                     'name':'Register',
                     'description':'',
-                    'function': todo,
+                    'function': views.register,
                 },
                 {
                     'name':'Logout',
                     'description':'',
-                    'function': todo,
+                    'function': views.logout,
                 }
             ]
         },
@@ -34,22 +36,22 @@ MENU_ROUTE = {
                 {
                     'name': 'Create new message',
                     'description': '',
-                    'function':todo,
+                    'function':views.create_new_message,
                 },
                 {
                     'name': 'Inbox',
                     'description': '',
-                    'function':todo
+                    'function':views.inbox
                 },
                 {
                     'name': 'Sent',
                     'description': '',
-                    'function':todo,
+                    'function':views.sent,
                 },
                 {
                     'name': 'Draft',
                     'description': '',
-                    'function':todo,
+                    'function':views.draft,
                 }
             ]
         }
