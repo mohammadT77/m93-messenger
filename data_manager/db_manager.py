@@ -9,6 +9,26 @@ class DBManager(BaseManager):
         self._db_config = config['db_config']
         self.__conn = pg.connect(**self._db_config)
 
+    @staticmethod
+    def _get_create_table_sql(model_cls: type):
+        assert getattr(model_cls, 'COLUMNS', None), "Error"
+        assert getattr(model_cls, 'TABLE_NAME', None), "Error"
+        assert issubclass(model_cls, BaseModel)
+
+        sql = f"CREATE TABLE {model_cls.TABLE_NAME} ("
+        for col in model_cls._get_columns().values():
+            sql += " ".join(col) + ','
+        sql += ')'
+
+        return sql
+    
+    def create_table(self, model_cls: type):
+        with self.__conn.cursor() as curs:
+            sql = self._get_create_table_sql(model_cls)
+            curs.execute(sql)
+        
+        self.__conn.commit()
+    
 
     def create(self, m: BaseModel):
         pass

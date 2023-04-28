@@ -4,6 +4,13 @@ from dataclasses import dataclass
 @dataclass
 class User(BaseModel):
     TABLE_NAME = 'users'
+    
+    COLUMNS = {
+        'username':('username','VARCHAR(20)','UNIQUE'),
+        'first_name':('first_name','VARCHAR(10)','NOT NULL'),
+        'last_name':('last_name','VARCHAR(10)','NOT NULL'),
+        'password':('password','VARCHAR(100)','NOT NULL'),
+    }
 
     CURRENT_USER = None
 
