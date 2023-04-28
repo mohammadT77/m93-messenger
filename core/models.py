@@ -37,7 +37,7 @@ class User(BaseModel):
         with manager.connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as curs:
             curs.execute(f"SELECT * FROM {cls.TABLE_NAME} WHERE username=%s", (username,))
             data = curs.fetchone()
-            return cls.from_dict(data)
+            return cls.from_dict(data) if data else None
    
 
 @dataclass
