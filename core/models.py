@@ -3,11 +3,13 @@ from dataclasses import dataclass
 
 @dataclass
 class User(BaseModel):
+    TABLE_NAME = 'users'
+
     CURRENT_USER = None
 
     username: str
-    firstname: str
-    lastname: str
+    first_name: str
+    last_name: str
     password: str  # TODO!
 
     @staticmethod

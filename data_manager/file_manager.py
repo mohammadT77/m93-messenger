@@ -6,6 +6,7 @@ import os
 class FileManager(BaseManager):
 
     def __init__(self, config: dict) -> None:
+        super().__init__(config)
         self._files_root = config.get('ROOT_PATH') # data/
 
     def _get_id(self, model_type: type) -> int: # User
